@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,22 +31,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
-
-    @Inject lateinit var stepSampler: StepSampler
-    @Inject lateinit var audioSampler: AudioSampler
-
+    private val dataViewModel :DataViewModel by viewModels()
     var trackSteps = false
-
-    private val textToSpeechEngine: TextToSpeech by lazy {
-        // Pass in context and the listener.
-        TextToSpeech(this,
-            TextToSpeech.OnInitListener { status ->
-                // set our locale only if init was success.
-                if (status == TextToSpeech.SUCCESS) {
-                    textToSpeechEngine.language = Locale.US
-                }
-            })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,71 +43,18 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Column() {
-                        Row() {
-                            Button(
-                                // below line is use to add onclick
-                                // parameter for our button onclick
-                                onClick = {
-                                    // when user is clicking the button
-                                    // we are displaying a toast message.
-                                    speakTest()
-                                }
-                            )
-                            {
-                                Text(text = "TTS_Test", color = Color.White)
-                            }
-                            Button(
-                                // below line is use to add onclick
-                                // parameter for our button onclick
-                                onClick = {
-                                    // when user is clicking the button
-                                    // we are displaying a toast message.
-                                    if (trackSteps) {
-                                        trackSteps = false
-                                        stepSampler.stopTracking()
-                                    }
-                                    else {
-                                        trackSteps = true
-                                        stepSampler.startTracking()
-
-                                    }
-
-                                }
-                            )
-                            {
-                                Text(text = "Step_Test", color = Color.White)
-                            }
-                        }
-                    }
+                    MainScreen(dataViewModel = dataViewModel)
                 }
             }
         }
     }
-
     override fun onPause() {
-        textToSpeechEngine.stop()
-
+        dataViewModel.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
-        textToSpeechEngine.shutdown()
+        dataViewModel.onDestroy()
         super.onDestroy()
-    }
-
-    fun speakTest() {
-//        textToSpeechEngine.speak("1", TextToSpeech.QUEUE_ADD, null, "tts1")
-//        textToSpeechEngine.speak("2", TextToSpeech.QUEUE_ADD, null, "tts2")
-//        textToSpeechEngine.speak("3", TextToSpeech.QUEUE_ADD, null, "tts3")
-//        textToSpeechEngine.speak("4", TextToSpeech.QUEUE_ADD, null, "tts4")
-//        textToSpeechEngine.speak("5", TextToSpeech.QUEUE_ADD, null, "tts5")
-//        textToSpeechEngine.speak("6", TextToSpeech.QUEUE_ADD, null, "tts6")
-        textToSpeechEngine.speak("Too fast", TextToSpeech.QUEUE_ADD, null, "tts1")
-        textToSpeechEngine.speak("too slow", TextToSpeech.QUEUE_ADD, null, "tts2")
-        textToSpeechEngine.speak("3", TextToSpeech.QUEUE_ADD, null, "tts3")
-        textToSpeechEngine.speak("4", TextToSpeech.QUEUE_ADD, null, "tts4")
-        textToSpeechEngine.speak("5", TextToSpeech.QUEUE_ADD, null, "tts5")
-        textToSpeechEngine.speak("6", TextToSpeech.QUEUE_ADD, null, "tts6")
     }
 }
