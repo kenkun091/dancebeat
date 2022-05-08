@@ -6,9 +6,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(dataViewModel: DataViewModel) {
+    val bpm = dataViewModel.stepSampler.rollingBPM.observeAsState()
 Column() {
     Row() {
         Button(
@@ -43,6 +46,9 @@ Column() {
         {
             Text(text = "Record_Test", color = Color.White)
         }
+    }
+    Row() {
+        Text("BPM: " + bpm.value.toString(), fontSize = 120.sp)
     }
 }
 }

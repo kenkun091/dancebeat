@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlin.math.sqrt
@@ -18,7 +19,7 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
     val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-    var rollingBPM: Long = 120
+    var rollingBPM: MutableLiveData<Long> = MutableLiveData<Long>(120)
     var rollingSensorHz: Long  = 60
     var downbeatOffset: Long  = 0
     var maxHistory = rollingSensorHz * 10
@@ -42,24 +43,24 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
         val z = event.values[2]
 
         // var a = sqrt((x * x) + (y * y) + (z * z))
-        var a = y
+        var a = sqrt((x * x) + (y * y) + (z * z))
         // Log.i("Test_ACC", "t2: " + SystemClock.elapsedRealtime())
         // Log.i("Test_ACC", "x: " + x.toString())
         // Log.i("Test_ACC", "y: " + y.toString())
         // Log.i("Test_ACC", "z: " + z.toString())
 
-        if (accelerometerHistory.size > 0) {
-            val aPast = accelerometerHistory[accelerometerHistory.size - 1].a
-            a = ((a - aPast) / smoothing) + aPast
-        }
+//        if (accelerometerHistory.size > 0) {
+//            val aPast = accelerometerHistory[accelerometerHistory.size - 1].a
+//            a = ((a - aPast) / smoothing) + aPast
+//        }
 
         accelerometerHistory.add(AccelerometerEvent(t, a))
         if (accelerometerHistory.size > maxHistory) {
             accelerometerHistory.removeFirst()
         }
 
-        rollingBPM = calculateRollingBPM(rollingBPM, accelerometerHistory)
-        Log.i("Test_ACC", "BPM: " + rollingBPM.toString())
+        rollingBPM.postValue(calculateRollingBPM(rollingBPM.value!!, accelerometerHistory))
+        Log.i("Test_ACC", "BPM: " + rollingBPM.value.toString())
     }
 
     fun calculateRollingBPM(currBpm: Long, history: List<AccelerometerEvent>): Long {
@@ -76,8 +77,8 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
             return 60
         }
         val avgOffset = sum / (peaks.size - 1)
-        var bpm = avgOffset / 1000000L
-        bpm = (bpm - currBpm) / smoothing + currBpm
+        var bpm = (avgOffset.toFloat()/1000000F * (60F / 1000F)).toLong() / 2
+        // bpm = (bpm - currBpm) / smoothing + currBpm
         return bpm
     }
 

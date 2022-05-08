@@ -3,6 +3,8 @@ package edu.stanford.hci.terrell.dancebeat
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +49,10 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
             trackSteps = true
             stepSampler.startTracking()
         }
+    }
+
+    fun getStepBPM(): LiveData<Long> {
+        return stepSampler.rollingBPM
     }
 
     fun testTTS() {
