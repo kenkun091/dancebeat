@@ -2,6 +2,7 @@ package edu.stanford.hci.terrell.dancebeat
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,9 +30,11 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
 
     fun recordAudio() {
         viewModelScope.launch {
+            Log.d("Test_Audio", "Recording Started")
             audioSampler.startRecording()
             delay(6 * 1000)
             audioSampler.stopRecording()
+            Log.d("Test_Audio", "Recording Stopped")
         }
     }
 

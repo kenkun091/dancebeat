@@ -37,11 +37,11 @@ Column() {
             onClick = {
                 // when user is clicking the button
                 // we are displaying a toast message.
-                dataViewModel.testTTS()
+                dataViewModel.recordAudio()
             }
         )
         {
-            Text(text = "TTS_Test", color = Color.White)
+            Text(text = "Record_Test", color = Color.White)
         }
     }
 }
