@@ -12,49 +12,62 @@ import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlin.math.sqrt
+import kotlin.math.abs
 
 class StepSampler @Inject constructor(@ApplicationContext context: Context): SensorEventListener{
     val timeStart: Long = -1
 
     val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+    val accelerometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+    val gravity: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
 
     var rollingBPM: MutableLiveData<Long> = MutableLiveData<Long>(120)
-    var rollingSensorHz: Long  = 60
+    var rollingSensorHz: Long  = 100
     var downbeatOffset: Long  = 0
-    var maxHistory = rollingSensorHz * 10
+    var maxHistory = rollingSensorHz * 6
     val accelerometerHistory = mutableListOf<AccelerometerEvent>()
 
-    val smoothing = 20
+    val smoothing = 60F
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     // http://aosabook.org/en/500L/a-pedometer-in-the-real-world.html
-    var g_x = 0
-    var g_y = 1
-    var g_z = 0
+    var x_g = 0F
+    var y_g = 10F
+    var z_g = 0F
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) {
             return
         }
-        val t = event.timestamp
-        val x = event.values[0]
-        val y = event.values[1]
-        val z = event.values[2]
 
-        // var a = sqrt((x * x) + (y * y) + (z * z))
-        var a = sqrt((x * x) + (y * y) + (z * z))
+        if (event.sensor.type == Sensor.TYPE_GRAVITY) {
+            x_g = (event.values[0] - x_g) / smoothing + x_g
+            y_g = (event.values[1] - y_g) / smoothing + y_g
+            z_g = (event.values[2] - z_g) / smoothing + z_g
+            return
+        }
+
+        val t_u = event.timestamp
+        val x_u = event.values[0]
+        val y_u = event.values[1]
+        val z_u  = event.values[2]
+
+         // var a = sqrt((x_u * x_u) + (y_u * y_u) + (z_u * z_u))
+
+         var a = ((x_u * x_g) + (y_u * y_g) + (z_u * z_g))
+        // a = abs(a)
+        // var a = sqrt(y_u * y_u)
         // Log.i("Test_ACC", "t2: " + SystemClock.elapsedRealtime())
         // Log.i("Test_ACC", "x: " + x.toString())
         // Log.i("Test_ACC", "y: " + y.toString())
         // Log.i("Test_ACC", "z: " + z.toString())
 
-//        if (accelerometerHistory.size > 0) {
-//            val aPast = accelerometerHistory[accelerometerHistory.size - 1].a
-//            a = ((a - aPast) / smoothing) + aPast
-//        }
+        if (accelerometerHistory.size > 0) {
+            val aPast = accelerometerHistory[accelerometerHistory.size - 1].a
+            a = ((a - aPast) / smoothing) + aPast
+        }
 
-        accelerometerHistory.add(AccelerometerEvent(t, a))
+        accelerometerHistory.add(AccelerometerEvent(t_u, a))
         if (accelerometerHistory.size > maxHistory) {
             accelerometerHistory.removeFirst()
         }
@@ -77,9 +90,13 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
             return 60
         }
         val avgOffset = sum / (peaks.size - 1)
-        var bpm = (avgOffset.toFloat()/1000000F * (60F / 1000F)).toLong() / 2
-        // bpm = (bpm - currBpm) / smoothing + currBpm
-        return bpm
+        //var bpm = (avgOffset.toFloat() / (1000000F)).toLong()
+        // Log.d("Test_ACC", "Offset: " + avgOffset.toString())
+        //var bpm = (avgOffset.toFloat() / 1000000F * 60F).toLong()
+        var bpmF = avgOffset.toFloat() / 1000000F
+        bpmF = 1F / bpmF * 60000F
+        // bpmF = (bpmF - currBpm.toFloat()) / smoothing + currBpm.toFloat()
+        return (bpmF).toLong()
     }
 
     private fun findPeaks(history: List<AccelerometerEvent>): List<AccelerometerEvent> {
@@ -97,7 +114,9 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
     }
 
     fun startTracking() {
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME)
+        sensorManager.registerListener(this, gravity, SensorManager.SENSOR_DELAY_GAME)
+
     }
 
     fun stopTracking() {

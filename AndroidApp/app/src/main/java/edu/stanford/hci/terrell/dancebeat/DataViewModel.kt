@@ -48,6 +48,12 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
         else {
             trackSteps = true
             stepSampler.startTracking()
+            viewModelScope.launch {
+                while(trackSteps) {
+                    delay(6000)
+                    textToSpeechEngine.speak(stepSampler.rollingBPM.value.toString(), TextToSpeech.QUEUE_ADD, null, "bpm")
+                }
+            }
         }
     }
 
