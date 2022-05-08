@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">beat track</string>
+    <string-array name="startDancing">
+        <item>start dancing</item>
+    </string-array>
+    <string-array name="stopDancing">
+        <item>stop dancing</item>
+    </string-array>
+</resources>

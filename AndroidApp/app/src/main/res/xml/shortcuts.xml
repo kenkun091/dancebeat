@@ -1,0 +1,30 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<!--    <capability-->
+<!--        android:name="custom.actions.intent.START_DANCING"-->
+<!--        app:queryPatterns="@array/startDancing">-->
+<!--        <slice>-->
+<!--            <url-template-->
+<!--                android:value="content://edu.stanford.hci.terrell.dancebeat/startDancing" />-->
+<!--        </slice>-->
+<!--    </capability>-->
+<!--    <capability-->
+<!--        android:name="custom.actions.intent.STOP_DANCING"-->
+<!--        app:queryPatterns="@array/stopDancing">-->
+<!--        <slice>-->
+<!--            <url-template-->
+<!--                android:value="content://edu.stanford.hci.terrell.dancebeat/stopDancing" />-->
+<!--        </slice>-->
+<!--    </capability>-->
+<!--    <capability android:name="actions.intent.START_EXERCISE">-->
+<!--        <intent-->
+<!--            android:action="android.intent.action.VIEW"-->
+<!--            android:targetPackage="edu.stanford.hci.terrell.dancebeat"-->
+<!--            android:targetClass=".MainActivity">-->
+<!--            &lt;!&ndash; Eg. name = "Running" &ndash;&gt;-->
+<!--            <parameter-->
+<!--                android:name="exercise.name"-->
+<!--                android:key="name"/>-->
+<!--        </intent>-->
+<!--    </capability>-->
+</shortcuts>
