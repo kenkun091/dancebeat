@@ -14,3 +14,5 @@ RUN apt-get update && \
     python setup.py develop --user
 
 COPY ./app /code/app
+
+EXPOSE 8000

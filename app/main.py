@@ -9,6 +9,10 @@ estimator = BeatNet(1, mode='online', inference_model='DBN', plot=[], thread=Fal
 
 app = FastAPI()
 
+@app.post("/hello")
+async def hello():
+    return {"msg": "hello!"}
+    
 @app.post("/files/")
 async def create_file(file: bytes = File(...)):
     return {"file_size": len(file)}
