@@ -23,11 +23,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.AndroidEntryPoint
 import edu.stanford.hci.terrell.dancebeat.ui.theme.DanceBeatTheme
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
+class MainActivity: ComponentActivity() {
 
-class MainActivity : ComponentActivity() {
+    @Inject lateinit var stepSampler: StepSampler
+    @Inject lateinit var audioSampler: AudioSampler
+
+    var trackSteps = false
+
     private val textToSpeechEngine: TextToSpeech by lazy {
         // Pass in context and the listener.
         TextToSpeech(this,
@@ -62,6 +70,27 @@ class MainActivity : ComponentActivity() {
                             {
                                 Text(text = "TTS_Test", color = Color.White)
                             }
+                            Button(
+                                // below line is use to add onclick
+                                // parameter for our button onclick
+                                onClick = {
+                                    // when user is clicking the button
+                                    // we are displaying a toast message.
+                                    if (trackSteps) {
+                                        trackSteps = false
+                                        stepSampler.stopTracking()
+                                    }
+                                    else {
+                                        trackSteps = true
+                                        stepSampler.startTracking()
+
+                                    }
+
+                                }
+                            )
+                            {
+                                Text(text = "Step_Test", color = Color.White)
+                            }
                         }
                     }
                 }
@@ -71,6 +100,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         textToSpeechEngine.stop()
+
         super.onPause()
     }
 
@@ -80,8 +110,14 @@ class MainActivity : ComponentActivity() {
     }
 
     fun speakTest() {
-        textToSpeechEngine.speak("1", TextToSpeech.QUEUE_ADD, null, "tts1")
-        textToSpeechEngine.speak("2", TextToSpeech.QUEUE_ADD, null, "tts2")
+//        textToSpeechEngine.speak("1", TextToSpeech.QUEUE_ADD, null, "tts1")
+//        textToSpeechEngine.speak("2", TextToSpeech.QUEUE_ADD, null, "tts2")
+//        textToSpeechEngine.speak("3", TextToSpeech.QUEUE_ADD, null, "tts3")
+//        textToSpeechEngine.speak("4", TextToSpeech.QUEUE_ADD, null, "tts4")
+//        textToSpeechEngine.speak("5", TextToSpeech.QUEUE_ADD, null, "tts5")
+//        textToSpeechEngine.speak("6", TextToSpeech.QUEUE_ADD, null, "tts6")
+        textToSpeechEngine.speak("Too fast", TextToSpeech.QUEUE_ADD, null, "tts1")
+        textToSpeechEngine.speak("too slow", TextToSpeech.QUEUE_ADD, null, "tts2")
         textToSpeechEngine.speak("3", TextToSpeech.QUEUE_ADD, null, "tts3")
         textToSpeechEngine.speak("4", TextToSpeech.QUEUE_ADD, null, "tts4")
         textToSpeechEngine.speak("5", TextToSpeech.QUEUE_ADD, null, "tts5")

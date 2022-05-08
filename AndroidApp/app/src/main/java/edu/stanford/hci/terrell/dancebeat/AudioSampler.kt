@@ -2,6 +2,7 @@ package edu.stanford.hci.terrell.dancebeat
 
 import android.content.Context
 import android.media.AudioFormat
+import android.os.SystemClock
 import com.android.volley.Response
 import com.github.squti.androidwaverecorder.WaveRecorder
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,6 +13,10 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context)
     val filePath: String = appContext.cacheDir?.absolutePath + "/audioSample.wav"
     val waveRecorder = WaveRecorder(filePath)
 
+    var timeStart: Long = -1
+    var timeStop: Long = -1
+    var timeDuration: Long = -1
+
     init {
         waveRecorder.waveConfig.sampleRate = 22050
         waveRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_MONO
@@ -19,11 +24,14 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context)
     }
 
     fun startRecording() {
+        timeStart = SystemClock.elapsedRealtime()
         waveRecorder.startRecording()
     }
 
     fun stopRecording() {
+        timeStop = SystemClock.elapsedRealtime()
         waveRecorder.stopRecording()
+        timeDuration = timeStop - timeStart
     }
 
     fun analyzeRecording() {
