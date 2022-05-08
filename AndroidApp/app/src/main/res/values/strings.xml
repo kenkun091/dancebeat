@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DanceBeat</string>
+    <string name="app_name">beat track</string>
     <string-array name="startDancing">
         <item>start dancing</item>
     </string-array>
