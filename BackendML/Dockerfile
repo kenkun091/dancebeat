@@ -17,6 +17,7 @@ COPY APIrequirements.txt ./
 RUN pip install --no-cache-dir -r APIrequirements.txt
 
 COPY ./app ./
+RUN mkdir assets
 
 EXPOSE 8000
 
