@@ -1,20 +1,23 @@
-FROM pytorch/pytorch:latest
+FROM python:3.9-bullseye
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+RUN apt update && apt upgrade -y
+RUN apt install -y ffmpeg
+RUN apt install -y libsndfile1
+RUN apt install -y portaudio19-dev
 
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y locales && locale-gen en_US.UTF-8
-RUN apt-get install -y git
-RUN apt-get install -y -qq libfftw3-dev
-RUN git clone --recursive https://github.com/CPJKU/madmom.git
-RUN cd madmom && pip install -r requirements.txt && python setup.py develop --user
-COPY ./app /code/app
-COPY ./requirements.txt /code/app/requirements.txt
-RUN pip install -r /code/app/requirements.txt
+COPY prerequirements.txt ./
+RUN pip install --no-cache-dir -r prerequirements.txt
+
+COPY MLrequirements.txt ./
+RUN pip install --no-cache-dir -r MLrequirements.txt
+
+COPY APIrequirements.txt ./
+RUN pip install --no-cache-dir -r APIrequirements.txt
+
+COPY ./app ./
 
 EXPOSE 8000
 
-CMD ["python", "/code/app/main.py"]
-
+CMD ["python", "/usr/src/app/main.py"]
