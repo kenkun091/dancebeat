@@ -22,9 +22,9 @@ class StepSampler @Inject constructor(@ApplicationContext context: Context): Sen
     val gravity: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
 
     var rollingBPM: MutableLiveData<Long> = MutableLiveData<Long>(120)
-    var rollingSensorHz: Long  = 100
+    var rollingSensorHz: Long  = 60
     var downbeatOffset: Long  = 0
-    var maxHistory = rollingSensorHz * 6
+    var maxHistory = rollingSensorHz * 3
     val accelerometerHistory = mutableListOf<AccelerometerEvent>()
 
     val smoothing = 60F
