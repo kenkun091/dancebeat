@@ -18,6 +18,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
 import kotlin.concurrent.scheduleAtFixedRate
+import kotlin.math.roundToLong
 
 
 class AudioSampler @Inject constructor (@ApplicationContext appContext: Context, val toneFeedback: ToneFeedback) {
@@ -60,20 +61,29 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context,
     }
 
     fun calculatePeriod(beats: List<Beat>): Long {
-        var sum = 0F
+        val periods = mutableListOf<Float>()
+
         for (i in beats.indices) {
             if (i != 0) {
-                sum += beats[i].t - beats[i - 1].t
+                periods.add(beats[i].t - beats[i - 1].t)
             }
         }
-        var p = sum / (beats.size - 1)
+
+        periods.sort()
+
+        var p = if (periods.size % 2 == 1) {
+            periods[periods.size / 2 + 1]
+        } else {
+            (periods[periods.size / 2] + periods[periods.size / 2 + 1]) / 2
+        }
+
         p *= 1000
-        return p.toLong()
+        return p.roundToLong()
     }
 
     fun calculateDelay(beats: List<Beat>, period: Long): Long {
         val timeNow = SystemClock.elapsedRealtime()
-        val timePassed = timeNow - (timeStart + (beats[0].t * 1000).toLong())
+        val timePassed = timeNow - (timeStart + (beats[0].t * 1000).roundToLong())
         val numBeatsPassed = timePassed / period
         val timeRemaining = timePassed - numBeatsPassed * period
         return timeRemaining
@@ -82,7 +92,7 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context,
     fun calculateBPM(period: Long): Long {
         var bpmF = period.toFloat() / 1000F
         bpmF = 1F / bpmF * 60F
-        return bpmF.toLong()
+        return bpmF.roundToLong()
     }
 
     fun analyzeRecording() {

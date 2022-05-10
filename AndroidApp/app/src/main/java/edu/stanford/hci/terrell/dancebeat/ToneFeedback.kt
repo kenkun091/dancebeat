@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class ToneFeedback @Inject constructor() {
     private val toneGenerator =
         ToneGenerator(AudioManager.STREAM_ACCESSIBILITY, ToneGenerator.MAX_VOLUME)
-    private val maxToneLength = 50;
+    private val maxToneLength = 10;
 
     fun playBeat() {
         Log.d("Beat", "BEAT")
