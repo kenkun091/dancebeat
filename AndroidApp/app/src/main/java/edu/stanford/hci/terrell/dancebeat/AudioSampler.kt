@@ -83,10 +83,23 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context,
 
     fun calculateDelay(beats: List<Beat>, period: Long): Long {
         val timeNow = SystemClock.elapsedRealtime()
-        val timePassed = timeNow - (timeStart + (beats[0].t * 1000).roundToLong())
-        val numBeatsPassed = timePassed / period
-        val timeRemaining = timePassed - numBeatsPassed * period
-        return timeRemaining
+        val delays = mutableListOf<Long>()
+
+        for (b in beats) {
+            val timePassed = timeNow - (timeStart + (b.t * 1000).roundToLong())
+            val numBeatsPassed = timePassed / period
+            val timeRemaining = timePassed - numBeatsPassed * period
+            delays.add(timeRemaining)
+        }
+
+        delays.sort()
+
+        var d = if (delays.size % 2 == 1) {
+            delays[delays.size / 2 + 1]
+        } else {
+            (delays[delays.size / 2] + delays[delays.size / 2 + 1]) / 2
+        }
+        return d
     }
 
     fun calculateBPM(period: Long): Long {
