@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(dataViewModel: DataViewModel) {
-    val bpm = dataViewModel.stepSampler.rollingBPM.observeAsState()
+    val danceBPM = dataViewModel.stepSampler.rollingBPM.observeAsState()
+    val musicBPM = dataViewModel.audioSampler.detectedBPM.observeAsState()
 Column() {
     Row() {
         Button(
@@ -48,7 +49,10 @@ Column() {
         }
     }
     Row() {
-        Text("BPM: " + bpm.value.toString(), fontSize = 120.sp)
+        Text("Dance BPM: " + danceBPM.value.toString(), fontSize = 60.sp)
+    }
+    Row() {
+        Text("Music BPM: " + musicBPM.value.toString(), fontSize = 60.sp)
     }
 }
 }

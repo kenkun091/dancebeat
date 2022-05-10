@@ -22,8 +22,9 @@ async def predict(file: bytes = File(...)):
     with open("./assets/recording.wav", "wb") as f:
         f.write(file)
     dbn_pred = estimator.process("./assets/recording.wav")
-    return dbn_pred
-
+    beats = [{"t": t, "b": b} for [t, b] in dbn_pred]
+    print(beats)
+    return {"beats": beats}
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

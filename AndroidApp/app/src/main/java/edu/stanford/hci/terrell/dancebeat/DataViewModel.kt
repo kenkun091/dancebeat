@@ -63,6 +63,10 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
         return stepSampler.rollingBPM
     }
 
+    fun getAudioBPM(): LiveData<Long> {
+        return audioSampler.detectedBPM
+    }
+
     fun testTTS() {
             textToSpeechEngine.speak("1", TextToSpeech.QUEUE_ADD, null, "tts1")
             textToSpeechEngine.speak("2", TextToSpeech.QUEUE_ADD, null, "tts2")
