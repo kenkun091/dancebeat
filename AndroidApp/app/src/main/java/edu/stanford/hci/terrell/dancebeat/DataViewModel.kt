@@ -34,9 +34,11 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
         viewModelScope.launch {
             Log.d("Test_Audio", "Recording Started")
             audioSampler.startRecording()
-            delay(6 * 1000)
+            delay(8 * 1000)
             audioSampler.stopRecording()
             Log.d("Test_Audio", "Recording Stopped")
+            Log.d("Test_Audio", "Sending Recording for Analysis")
+            audioSampler.analyzeRecording()
         }
     }
 

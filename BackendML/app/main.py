@@ -19,9 +19,9 @@ async def file_test(file: bytes = File(...)):
 
 @app.post("/predict")
 async def predict(file: bytes = File(...)):
-    with open("./assets/example.wav", "wb") as f:
+    with open("./assets/recording.wav", "wb") as f:
         f.write(file)
-    dbn_pred = estimator.process("./assets/example.wav")
+    dbn_pred = estimator.process("./assets/recording.wav")
     return dbn_pred
 
 

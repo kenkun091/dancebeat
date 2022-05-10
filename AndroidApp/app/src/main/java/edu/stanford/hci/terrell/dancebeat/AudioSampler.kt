@@ -3,13 +3,20 @@ package edu.stanford.hci.terrell.dancebeat
 import android.content.Context
 import android.media.AudioFormat
 import android.os.SystemClock
+import android.util.Log
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
+import com.android.volley.toolbox.HttpHeaderParser
+import com.android.volley.toolbox.Volley
 import com.github.squti.androidwaverecorder.WaveRecorder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
 
+
 class AudioSampler @Inject constructor (@ApplicationContext appContext: Context) {
+    val queue = Volley.newRequestQueue(appContext)
+
     val filePath: String = appContext.cacheDir?.absolutePath + "/audioSample.wav"
     val waveRecorder = WaveRecorder(filePath)
 
@@ -37,21 +44,27 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context)
     fun analyzeRecording() {
         val request = object : VolleyFileUploadRequest(
             Method.POST,
-            "https://test.com",
+            "http://192.168.86.50:8000/predict",
             Response.Listener {
-                println("response is: $it")
+                val json = String(it.data)
+                Log.d("Test_Acc", "response is: ${json}")
             },
             Response.ErrorListener {
-                println("error is: $it")
+                Log.d("Test_Acc","error is: $it")
             }
         ) {
             override fun getByteData(): MutableMap<String, FileDataPart> {
                 val audioBytes = File(filePath).readBytes()
 
                 var params = HashMap<String, FileDataPart>()
-                params["audioFile"] = FileDataPart("audioSample", audioBytes, "wav")
+                params["file"] = FileDataPart("audioSample", audioBytes, "wav")
                 return params
             }
         }
+        request.retryPolicy = DefaultRetryPolicy(
+            10 * 1000,
+            0,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        queue.add(request)
     }
 }
