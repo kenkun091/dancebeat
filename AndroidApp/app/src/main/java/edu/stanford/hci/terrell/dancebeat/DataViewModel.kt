@@ -67,13 +67,8 @@ class DataViewModel @Inject constructor(@ApplicationContext context: Context, va
         return audioSampler.detectedBPM
     }
 
-    fun testTTS() {
-            textToSpeechEngine.speak("1", TextToSpeech.QUEUE_ADD, null, "tts1")
-            textToSpeechEngine.speak("2", TextToSpeech.QUEUE_ADD, null, "tts2")
-            textToSpeechEngine.speak("3", TextToSpeech.QUEUE_ADD, null, "tts3")
-            textToSpeechEngine.speak("4", TextToSpeech.QUEUE_ADD, null, "tts4")
-            textToSpeechEngine.speak("5", TextToSpeech.QUEUE_ADD, null, "tts5")
-            textToSpeechEngine.speak("6", TextToSpeech.QUEUE_ADD, null, "tts6")
+    fun stopTone() {
+        audioSampler.stopTone()
     }
 
     fun onPause() {

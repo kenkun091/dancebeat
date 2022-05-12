@@ -54,6 +54,10 @@ class AudioSampler @Inject constructor (@ApplicationContext appContext: Context,
         timeDuration = timeStop - timeStart
     }
 
+    fun stopTone() {
+        toneTask?.cancel()
+    }
+
     fun parseBeats(respData: ByteArray): List<Beat> {
         val jsonString = String(respData)
         val beatData = gson.fromJson(jsonString, BeatData::class.java)

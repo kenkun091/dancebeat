@@ -2,57 +2,56 @@ package edu.stanford.hci.terrell.dancebeat
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(dataViewModel: DataViewModel) {
-    val danceBPM = dataViewModel.stepSampler.rollingBPM.observeAsState()
-    val musicBPM = dataViewModel.audioSampler.detectedBPM.observeAsState()
-Column() {
-    Row() {
-        Button(
-            // below line is use to add onclick
-            // parameter for our button onclick
-            onClick = {
-                // when user is clicking the button
-                // we are displaying a toast message.
-                dataViewModel.testTTS()
-            }
-        )
-        {
-            Text(text = "TTS_Test", color = Color.White)
+    val danceBPM = dataViewModel.getStepBPM().observeAsState()
+    val musicBPM = dataViewModel.getAudioBPM().observeAsState()
+
+    Column() {
+        Row() {
+            Text("Dance BPM: " + danceBPM.value.toString(), fontSize = 50.sp)
         }
-        Button(
-            onClick = {
-                dataViewModel.startStopTrackingSteps()
-            }
-        )
-        {
-            Text(text = "Step_Test", color = Color.White)
+        Row() {
+            Text("Music BPM: " + musicBPM.value.toString(), fontSize = 50.sp)
         }
-        Button(
-            // below line is use to add onclick
-            // parameter for our button onclick
-            onClick = {
-                // when user is clicking the button
-                // we are displaying a toast message.
-                dataViewModel.recordAudio()
+        Row() {
+            Button(
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    dataViewModel.startStopTrackingSteps()
+                }
+            )
+            {
+                Text(text = "Track Steps", color = Color.White)
             }
-        )
-        {
-            Text(text = "Record_Test", color = Color.White)
+            Button(
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    dataViewModel.recordAudio()
+                }
+            )
+            {
+                Text(text = "Track Music", color = Color.White)
+            }
+            Button(
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    dataViewModel.stopTone()
+                }
+            )
+            {
+                Text(text = "Stop Beat", color = Color.White)
+            }
         }
     }
-    Row() {
-        Text("Dance BPM: " + danceBPM.value.toString(), fontSize = 60.sp)
-    }
-    Row() {
-        Text("Music BPM: " + musicBPM.value.toString(), fontSize = 60.sp)
-    }
-}
 }
