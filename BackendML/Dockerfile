@@ -12,12 +12,16 @@ RUN pip install --no-cache-dir -r prerequirements.txt
 
 COPY MLrequirements.txt ./
 RUN pip install --no-cache-dir -r MLrequirements.txt
+#RUN python3 -m pipx ensurepath
+ENV PATH=/root/.local/bin:$PATH
+RUN pipx install spleeter==2.3.0
 
 COPY APIrequirements.txt ./
 RUN pip install --no-cache-dir -r APIrequirements.txt
 
 COPY ./app ./
-RUN mkdir assets
+COPY ./assets ./assets/
+RUN spleeter separate -p spleeter:2stems -o assets ./assets/recording.wav 
 
 EXPOSE 8000
 

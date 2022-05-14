@@ -4,6 +4,7 @@ import base64
 from BeatNet.BeatNet import BeatNet
 import struct
 from utils import *
+import subprocess
 
 estimator = BeatNet(1, mode='offline', inference_model='DBN', plot=[], thread=False)
 
@@ -21,7 +22,9 @@ async def file_test(file: bytes = File(...)):
 async def predict(file: bytes = File(...)):
     with open("./assets/recording.wav", "wb") as f:
         f.write(file)
-    dbn_pred = estimator.process("./assets/recording.wav")
+    p = subprocess.Popen("spleeter separate -p spleeter:2stems -o assets ./assets/recording.wav", shell=True)
+    p.wait()
+    dbn_pred = estimator.process("./assets/recording/accompaniment.wav")
     beats = [{"t": t, "b": b} for [t, b] in dbn_pred]
     print(beats)
     return {"beats": beats}
